@@ -176,16 +176,22 @@ class Train(pygame.sprite.Sprite):
         self.waitCycles = self.waitCycles + 1
         if self.waitCycles > WAIT_CYCLES:
           
-          # Can i start moving again? 
-          # is a train in the next section?
-         # currentX = 
-         # toBeX =  
-         # for train in self.trains:
-         #   if train.x  
-
-          self.state = 0
-          self.startMoving()
-          self.waitCycles = 0
+        # Can i start moving again? 
+        # is a train in the next section?
+          currentX = self.rect.centerx
+          if self.direction:
+            toBeX = self.track.getPosOfIndex(self.latestTrackIndex + 1).x
+          else:
+            toBeX = self.track.getPosOfIndex(self.latestTrackIndex - 1).x
+          for train in self.trains:
+            if train.rect.x > toBeX and train.rect.x < currentX:
+              # Wait longer
+              pass
+            else:
+              # start moving  
+              self.state = 0
+              self.startMoving()
+              self.waitCycles = 0
 
 # ------------------------------------------------------------------------------------------------------------- Main --
 if __name__ == "__main__":

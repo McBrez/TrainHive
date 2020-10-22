@@ -4,7 +4,7 @@ import constants
 
 
 class Train(pygame.sprite.Sprite):
-    def __init__(self, track, pathToImage, trainName, velocity = constants.BASE_VELOCITY):
+    def __init__(self, track, pathToImage, trainName, velocity=constants.BASE_VELOCITY):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(pathToImage)
         self.image = pygame.transform.scale(self.image, (int(50), int(25)))
@@ -65,9 +65,8 @@ class Train(pygame.sprite.Sprite):
         if self.state == 0:
             if self.moving:
                 # Is train in vicinity of next station?
-                vecNextStation = self.__getPosOfNextTrackIdx()
-                vecTrain = pygame.math.Vector2(
-                    self.rect.centerx, self.rect.centery)
+                vecNextStation = self.getPosOfNextTrackIdx()
+                vecTrain = pygame.math.Vector2(self.rect.centerx, self.rect.centery)
                 diffVec = vecNextStation - vecTrain
                 if diffVec.magnitude() < 2:
                     # Arrived at track index. Set the new trackIndex.
@@ -90,7 +89,7 @@ class Train(pygame.sprite.Sprite):
                             self.setGoal(constants.TRACK_END)
                         elif self.goalIndex == constants.TRACK_END:
                             self.setGoal(constants.TRACK_BEGIN)
-                        
+
                     # Wait at bit at a station.
                     self.state = 1
                 else:
@@ -110,7 +109,7 @@ class Train(pygame.sprite.Sprite):
                     self.startMoving()
                     self.waitCycles = 0
 
-    def __getPosOfNextTrackIdx(self):
+    def getPosOfNextTrackIdx(self):
         if self.direction:
             return self.track.getPosOfIndex(self.latestTrackIndex + 1)
         else:
@@ -126,11 +125,16 @@ class Train(pygame.sprite.Sprite):
         else:
             nextIndex = self.latestTrackIndex - 1
 
-        # Check if any trains have nextIndex set and move towards me.
+        # Check if any trains have nextIndex set.
         for otherTrain in self.trains:
             if (
                 otherTrain.latestTrackIndex == nextIndex
                 and otherTrain.direction != self.direction
+                or (
+                    otherTrain.latestTrackIndex == self.latestTrackIndex
+                    and otherTrain.direction == self.direction
+                    and otherTrain.moving
+                )
             ):
                 return False
 
@@ -148,7 +152,7 @@ class Train(pygame.sprite.Sprite):
         print("direction vector: ", vec)
 
     def prioritize(self):
-        self.state = 0 
+        self.state = 0
         self.waitCycles = 0
         self.startMoving()
         print(self.trainName + " wurde priorisiert.")

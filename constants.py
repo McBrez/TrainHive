@@ -5,6 +5,8 @@ def v2i(vector):
     return (int(vector.x), int(vector.y))
 
 
+ARG_CONV = "conventional"
+ARG_NEW = "newConcept"
 LINE_THICKNESS = 4
 TRACK_COLOR = (255, 255, 255)
 BASE_VELOCITY = 3
@@ -20,4 +22,14 @@ TRACK = [
 ]
 TRACK_BEGIN = 0
 TRACK_END = len(TRACK)
-TEXTBOX_POS =  pygame.math.Vector2(int(50), int(50))
+TEXTBOX_POS = pygame.math.Vector2(int(50), int(50))
+MINIMUM_INTER_TRAIN_DISTANCE = 60
+
+IMG_RAILJET = "./res/railjet.png"
+IMG_BUS = "./res/bus.png"
+IMG_CITYJET = "./res/cityjet.png"
+
+
+REGIONAL_ZUG = 1
+REGIONAL_EXPRESS = 2
+RAIL_JET = 3

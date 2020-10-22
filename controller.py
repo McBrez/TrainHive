@@ -2,8 +2,10 @@ import pygame
 
 import track
 import train
+import train_new
 import textbox
 import constants
+
 
 class Controller:
     def __init__(self, screen):
@@ -12,8 +14,49 @@ class Controller:
         self.track = None
         self.lastPressedKey = {}
         self.textbox = textbox.TextBox(constants.TEXTBOX_POS, self.screen)
+        self.trainIdIdx = 0
 
-    def addTrain(self, track, trackIndex, goalIndex, pathToImage, trainName, velocity = constants.BASE_VELOCITY):
+    def addNewTrain(
+        self,
+        track,
+        trackIndex,
+        goalIndex,
+        pathToImage,
+        trainName,
+        trainType,
+        velocity=constants.BASE_VELOCITY,
+    ):
+        newTrain = train_new.TrainNew(
+            track,
+            pathToImage,
+            trainName,
+            self.trainIdIdx,
+            trainType,
+            velocity,
+            self.screen,
+        )
+        self.trainIdIdx += 1
+        newTrain.place(trackIndex)
+        newTrain.setGoal(goalIndex)
+        newTrain.trains = self.trainList
+
+        # notify all trains about the new train
+        for knownTrain in self.trainList:
+            knownTrain.onTrainAdded(newTrain)
+
+        self.trainList.add(newTrain)
+
+        return newTrain
+
+    def addTrain(
+        self,
+        track,
+        trackIndex,
+        goalIndex,
+        pathToImage,
+        trainName,
+        velocity=constants.BASE_VELOCITY,
+    ):
         newTrain = train.Train(track, pathToImage, trainName, velocity)
         newTrain.place(trackIndex)
         newTrain.setGoal(goalIndex)
@@ -37,10 +80,16 @@ class Controller:
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT] == True and self.lastPressedKey[pygame.K_LEFT] == False:
             self.trainList.sprites()[0].prioritize()
-            self.textbox.showText( self.trainList.sprites()[0].trainName + " wurde manuell priorisiert.")
-        elif key[pygame.K_RIGHT] == True and self.lastPressedKey[pygame.K_RIGHT] == False:
+            self.textbox.showText(
+                self.trainList.sprites()[0].trainName + " wurde manuell priorisiert."
+            )
+        elif (
+            key[pygame.K_RIGHT] == True and self.lastPressedKey[pygame.K_RIGHT] == False
+        ):
             self.trainList.sprites()[1].prioritize()
-            self.textbox.showText( self.trainList.sprites()[1].trainName + " wurde manuell priorisiert.")
+            self.textbox.showText(
+                self.trainList.sprites()[1].trainName + " wurde manuell priorisiert."
+            )
 
         self.lastPressedKey[pygame.K_LEFT] = key[pygame.K_LEFT]
         self.lastPressedKey[pygame.K_RIGHT] = key[pygame.K_RIGHT]

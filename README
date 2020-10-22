@@ -1,0 +1,25 @@
+# TrainHive
+TrainHive is a small simulator that shall verify the feasibility of a distributed control approach for railway trains. 
+
+# Installation
+Be sure to have a current version of python3 installed. Other than that, an installation of the python package 'pygame' is needed. To install pygame following command line has to be executed:
+
+```
+py -m pip install -U pygame --user
+```
+
+# Usage
+Execute the file trainHive.py to start the simulation. The type of simulation is given by the first command line argument. 
+
+```
+py trainhive.py "conventional"
+```
+"conventional" simulates an environment where a central instance has to control the flow of trains. With the arrow keys, trains can be prioritized.
+
+```
+py trainhive.py "newConcept"
+```
+"newConcept" simulates an environment where a trains decide for themselves, wether to move into a track section.
+
+  
+

@@ -22,7 +22,11 @@ class TrainNew(train.Train):
         self.trainInfoBox = textbox.TextBox(
             pygame.math.Vector2(0, 0), self.screen, 16, 25
         )
-        self.trainInfoBox.showText(self.trainName)
+
+        self.trainNameBox = textbox.TextBox(
+            pygame.math.Vector2(0, 0), self.screen, 16, 0
+        )
+        self.trainNameBox.showText(self.trainName)
         self.trainId = trainId
         self.trainType = trainType
 
@@ -32,6 +36,10 @@ class TrainNew(train.Train):
             pygame.math.Vector2(self.rect.x, self.rect.centery - 30)
         )
         self.trainInfoBox.update()
+        self.trainNameBox.setPosition(
+            pygame.math.Vector2(self.rect.x, self.rect.centery + 30)
+        )
+        self.trainNameBox.update()
 
         if self.state == 0:
             if self.moving:
@@ -46,6 +54,12 @@ class TrainNew(train.Train):
                         self.latestTrackIndex = self.latestTrackIndex + 1
                     else:
                         self.latestTrackIndex = self.latestTrackIndex - 1
+                    print(
+                        self.trainName
+                        + " ist in Station "
+                        + str(self.latestTrackIndex)
+                        + " eingetroffen."
+                    )
 
                     # Move the train directly on top of the station.
                     self.rect.centerx = vecNextStation.x
@@ -56,6 +70,7 @@ class TrainNew(train.Train):
 
                     # Have we arrived at our goal?
                     if self.latestTrackIndex == self.goalIndex:
+                        print(self.trainName + " hat Endstation erreicht und kehrt um.")
                         # We arrived at our goal. Set new goal.
                         if self.goalIndex == constants.TRACK_BEGIN:
                             self.setGoal(constants.TRACK_END)
@@ -78,6 +93,16 @@ class TrainNew(train.Train):
                 # Can i start moving again?
                 # is a train in the next section?
                 if self.rulebook():
+                    if self.direction:
+                        nextIdx = self.latestTrackIndex + 1
+                    else:
+                        nextIdx = self.latestTrackIndex - 1
+                    print(
+                        self.trainName
+                        + " beginnt Anfahrt auf Station "
+                        + str(nextIdx)
+                        + "."
+                    )
                     # start moving
                     self.state = 0
                     self.startMoving()
@@ -212,14 +237,42 @@ class TrainNew(train.Train):
                 continue
             elif self.trainType == currentTrain.trainType:
                 if self._calculatePriority() > currentTrain._calculatePriority():
+                    print(
+                        self.trainName
+                        + " hat eine höhere Priorität als "
+                        + currentTrain.trainName
+                        + "("
+                        + str(self._calculatePriority())
+                        + " gegen "
+                        + str(currentTrain._calculatePriority())
+                        + ")"
+                    )
                     continue
                 elif self._calculatePriority() == currentTrain._calculatePriority():
+                    print(
+                        self.trainName
+                        + " und "
+                        + currentTrain.trainName
+                        + " haben gleiche Prioriät. ("
+                        + str(self._calculatePriority())
+                        + ")"
+                    )
                     if self.trainId > currentTrain.trainId:
                         continue
                     else:
                         self.trainInfoBox.showText("4.2.2.2")
                         return False
                 else:
+                    print(
+                        self.trainName
+                        + " hat eine niedrigere Priorität als "
+                        + currentTrain.trainName
+                        + "("
+                        + str(self._calculatePriority())
+                        + " gegen "
+                        + str(currentTrain._calculatePriority())
+                        + ")"
+                    )
                     self.trainInfoBox.showText("4.2.2.3")
                     return False
             else:

@@ -28,7 +28,10 @@ class TextBox:
         self.position = position
 
     def update(self):
-        if self.displayCycles < self.maxDisplayCycles:
+        if self.maxDisplayCycles == 0:
+            # Just redraw text and never fade out.
+            self.screen.blit(self.text, self.position)
+        elif self.displayCycles < self.maxDisplayCycles:
             # Just redraw text.
             self.screen.blit(self.text, self.position)
         else:

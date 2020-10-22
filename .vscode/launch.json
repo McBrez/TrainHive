@@ -5,10 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Modul",
+            "name": "Conventional",
             "type": "python",
             "request": "launch",
-            "module": "trainHive"
+            "module": "trainHive",
+            "args": [
+                "conventional"
+            ]
+        },
+        {
+            "name": "newConcept",
+            "type": "python",
+            "request": "launch",
+            "module": "trainHive",
+            "args": [
+                "newConcept"
+            ]
         },
         {
             "name": "Python: Current File (Integrated Terminal)",

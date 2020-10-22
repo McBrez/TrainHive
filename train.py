@@ -7,7 +7,7 @@ class Train(pygame.sprite.Sprite):
     def __init__(self, track, pathToImage, trainName, velocity=constants.BASE_VELOCITY):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(pathToImage)
-        self.image = pygame.transform.scale(self.image, (int(50), int(25)))
+        self.image = pygame.transform.scale(self.image, (int(100), int(30)))
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
@@ -44,11 +44,11 @@ class Train(pygame.sprite.Sprite):
     def startMoving(self):
         # Turn sprite
         directionVec = self.__getDirOfNextTrackIdx().normalize()
-        angle = self.heading.angle_to(directionVec)
+        # angle = self.heading.angle_to(directionVec)
 
-        self.image = pygame.transform.rotozoom(self.image, -1 * angle, 1)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.track.getPosOfIndex(self.latestTrackIndex)
+        # self.image = pygame.transform.rotozoom(self.image, -1 * angle, 1)
+        # self.rect = self.image.get_rect()
+        # self.rect.center = self.track.getPosOfIndex(self.latestTrackIndex)
 
         self.heading = directionVec
 

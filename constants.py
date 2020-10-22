@@ -24,6 +24,8 @@ TRACK_BEGIN = 0
 TRACK_END = len(TRACK)
 TEXTBOX_POS = pygame.math.Vector2(int(50), int(50))
 MINIMUM_INTER_TRAIN_DISTANCE = 110
+STATION_DISPLACEMENT = 80
+
 
 IMG_RAILJET = "./res/railjet.png"
 IMG_BUS = "./res/bus.png"

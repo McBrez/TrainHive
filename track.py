@@ -9,6 +9,12 @@ class Track:
         self.startingPoint = startingPoint
         self.screen = screen
 
+        # Create a list of list. It shall have as much entries as there are stations.
+        self.parkedTrains = []
+        self.parkedTrains.append(list())
+        for _ in vectorList:
+            self.parkedTrains.append(list())
+
     def draw(self):
         currentEndPos = self.startingPoint + self.vectorList[0]
         pygame.draw.line(
@@ -55,3 +61,23 @@ class Track:
             return self.vectorList[trackIndex]
         else:
             return self.vectorList[trackIndex - 1] * -1
+
+    def enterStation(self, train, trackIndex):
+        self.parkedTrains[trackIndex].append(train)
+        pos = self.getPosOfIndex(trackIndex)
+        pos.y += (
+            -1
+            * (len(self.parkedTrains[trackIndex]) - 1)
+            * constants.STATION_DISPLACEMENT
+        )
+        return pos
+
+    def leaveStation(self, train, trackIndex):
+        self.parkedTrains[trackIndex].remove(train)
+        return self.getPosOfIndex(trackIndex)
+
+    def waitAtStation(self, train, trackIndex):
+        idx = self.parkedTrains[trackIndex].index(train)
+        pos = self.getPosOfIndex(trackIndex)
+        pos.y += -1 * idx * constants.STATION_DISPLACEMENT
+        return pos

@@ -61,9 +61,10 @@ class TrainNew(train.Train):
                         + " eingetroffen."
                     )
 
-                    # Move the train directly on top of the station.
-                    self.rect.centerx = vecNextStation.x
-                    self.rect.centery = vecNextStation.y
+                    # Park the train at the station.
+                    self.rect.center = self.track.enterStation(
+                        self, self.latestTrackIndex
+                    )
 
                     # Stop moving.
                     self.stopMoving()
@@ -88,6 +89,7 @@ class TrainNew(train.Train):
 
         elif self.state == 1:
             self.waitCycles = self.waitCycles + 1
+            self.rect.center = self.track.waitAtStation(self, self.latestTrackIndex)
             if self.waitCycles > constants.WAIT_CYCLES:
 
                 # Can i start moving again?
@@ -107,6 +109,9 @@ class TrainNew(train.Train):
                     self.state = 0
                     self.startMoving()
                     self.waitCycles = 0
+                    self.rect.center = self.track.leaveStation(
+                        self, self.latestTrackIndex
+                    )
 
     def rulebook(self):
         # Ist ein Zug im (eingleisigen) Gleisabschnit?
@@ -206,17 +211,17 @@ class TrainNew(train.Train):
 
     def _claimsToSection(self):
         # Get the trains, that are at the current and the next station.
-        currentPos = self.track.getPosOfIndex(self.latestTrackIndex)
-        nextPos = self.getPosOfNextTrackIdx()
+        currentPos = self.track.getPosOfIndex(self.latestTrackIndex).x
+        nextPos = self.getPosOfNextTrackIdx().x
 
         trainsAtCurrentPos = []
         trainsAtNextPos = []
         for currentTrain in self.trains.sprites():
             if currentTrain == self:
                 continue
-            if currentTrain.rect.center == currentPos:
+            if currentTrain.rect.centerx == currentPos:
                 trainsAtCurrentPos.append(currentTrain)
-            elif currentTrain.rect.center == nextPos:
+            elif currentTrain.rect.centerx == nextPos:
                 trainsAtNextPos.append(currentTrain)
 
         # Which of those want to move into the next sector?

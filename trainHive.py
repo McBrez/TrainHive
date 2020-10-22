@@ -18,36 +18,32 @@ if __name__ == "__main__":
 
     # Init Controller
     controller = controller.Controller(screen)
-    controller.addTrack(pygame.math.Vector2(int(100), int(50)), constants.TRACK)
-
-    # controller.addTrain(controller.track, 0, 6)
-    controller.addTrain(controller.track, 6, 0)
-
+    controller.addTrack(pygame.math.Vector2(int(100), int(height/2)), constants.TRACK)
+    controller.addTrain(controller.track, constants.TRACK_BEGIN, constants.TRACK_END, "./res/train_red.png", "Zug Rot", 2)
+    controller.addTrain(controller.track, constants.TRACK_END, constants.TRACK_BEGIN, "./res/train_green.png", "Zug Grün", 3)
     controller.start()
-    for someTrain in controller.trainList:
-        someTrain.debug()
+
+
+
     # Worker loop
     done = False
-    firstIteration = True
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
 
-        # Do updates
-        controller.update()
-
         # fill the screen
         screen.fill((0, 0, 0))
+
+        # Do updates
+        controller.update()
 
         # Draw stuff
         controller.draw()
 
+        pygame.display.update()
         pygame.display.flip()
 
-        if firstIteration:
-            firstIteration = False
-        else:
-            clock.tick(60)
+        clock.tick(60)
 
     pygame.quit()

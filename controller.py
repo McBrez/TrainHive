@@ -2,16 +2,19 @@ import pygame
 
 import track
 import train
-
+import textbox
+import constants
 
 class Controller:
     def __init__(self, screen):
         self.screen = screen
         self.trainList = pygame.sprite.Group()
         self.track = None
+        self.lastPressedKey = {}
+        self.textbox = textbox.TextBox(constants.TEXTBOX_POS, self.screen)
 
-    def addTrain(self, track, trackIndex, goalIndex):
-        newTrain = train.Train(track)
+    def addTrain(self, track, trackIndex, goalIndex, pathToImage, trainName, velocity = constants.BASE_VELOCITY):
+        newTrain = train.Train(track, pathToImage, trainName, velocity)
         newTrain.place(trackIndex)
         newTrain.setGoal(goalIndex)
         newTrain.trains = self.trainList
@@ -32,15 +35,19 @@ class Controller:
 
     def update(self):
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
-            for train in self.trainList:
-                train.kill()
-        elif key[pygame.K_RIGHT]:
-            for train in self.trainList:
-                train.startMoving()
+        if key[pygame.K_LEFT] == True and self.lastPressedKey[pygame.K_LEFT] == False:
+            self.trainList.sprites()[0].prioritize()
+            self.textbox.showText( self.trainList.sprites()[0].trainName + " wurde manuell priorisiert.")
+        elif key[pygame.K_RIGHT] == True and self.lastPressedKey[pygame.K_RIGHT] == False:
+            self.trainList.sprites()[1].prioritize()
+            self.textbox.showText( self.trainList.sprites()[1].trainName + " wurde manuell priorisiert.")
+
+        self.lastPressedKey[pygame.K_LEFT] = key[pygame.K_LEFT]
+        self.lastPressedKey[pygame.K_RIGHT] = key[pygame.K_RIGHT]
 
         # Call update for held instances
         self.trainList.update()
+        self.textbox.update()
 
     def start(self):
         for train in self.trainList:

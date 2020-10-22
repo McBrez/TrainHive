@@ -4,9 +4,9 @@ import constants
 
 
 class Train(pygame.sprite.Sprite):
-    def __init__(self, track):
+    def __init__(self, track, pathToImage, trainName, velocity = constants.BASE_VELOCITY):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("train.png")
+        self.image = pygame.image.load(pathToImage)
         self.image = pygame.transform.scale(self.image, (int(50), int(25)))
         self.rect = self.image.get_rect()
         self.rect.x = 0
@@ -20,6 +20,8 @@ class Train(pygame.sprite.Sprite):
         self.goalIndex = -1
         self.waitCycles = 0
         self.trains = pygame.sprite.Group()
+        self.trainName = trainName
+        self.velocity = velocity
 
     def onTrainAdded(self, train):
         self.trains.add(train)
@@ -65,8 +67,7 @@ class Train(pygame.sprite.Sprite):
                 # Is train in vicinity of next station?
                 vecNextStation = self.__getPosOfNextTrackIdx()
                 vecTrain = pygame.math.Vector2(
-                    int(self.rect.centerx), int(self.rect.centery)
-                )
+                    self.rect.centerx, self.rect.centery)
                 diffVec = vecNextStation - vecTrain
                 if diffVec.magnitude() < 2:
                     # Arrived at track index. Set the new trackIndex.
@@ -84,16 +85,18 @@ class Train(pygame.sprite.Sprite):
 
                     # Have we arrived at our goal?
                     if self.latestTrackIndex == self.goalIndex:
-                        # We arrived at our goal. Remove the train.
-                        self.kill()  # autsch
-                    else:
-                        # Wait at station.
-                        self.state = 1
+                        # We arrived at our goal. Set new goal.
+                        if self.goalIndex == constants.TRACK_BEGIN:
+                            self.setGoal(constants.TRACK_END)
+                        elif self.goalIndex == constants.TRACK_END:
+                            self.setGoal(constants.TRACK_BEGIN)
+                        
+                    # Wait at bit at a station.
+                    self.state = 1
                 else:
                     # Move train.
-                    moveVector = self.heading * constants.BASE_VELOCITY
+                    moveVector = self.heading * self.velocity
                     self.rect.center = self.rect.center + moveVector
-                    print(self.rect.center)
 
         elif self.state == 1:
             self.waitCycles = self.waitCycles + 1
@@ -143,3 +146,9 @@ class Train(pygame.sprite.Sprite):
         direction = self.track.getDirOfIndex(False, self.latestTrackIndex)
         vec = self.heading * direction.magnitude()
         print("direction vector: ", vec)
+
+    def prioritize(self):
+        self.state = 0 
+        self.waitCycles = 0
+        self.startMoving()
+        print(self.trainName + " wurde priorisiert.")

@@ -8,7 +8,7 @@ def v2i(vector):
 ARG_CONV = "conventional"
 ARG_NEW = "newConcept"
 LINE_THICKNESS = 4
-TRACK_COLOR = (255, 255, 255)
+TRACK_COLOR = (100, 100, 100)
 BASE_VELOCITY = 3
 WAIT_CYCLES = 75
 TRACK = [

@@ -20,11 +20,11 @@ class TrainNew(train.Train):
 
         self.screen = screen
         self.trainInfoBox = textbox.TextBox(
-            pygame.math.Vector2(0, 0), self.screen, 16, 25
+            pygame.math.Vector2(0, 0), self.screen, 30, 25, color=(0, 0, 0)
         )
 
         self.trainNameBox = textbox.TextBox(
-            pygame.math.Vector2(0, 0), self.screen, 16, 0
+            pygame.math.Vector2(0, 0), self.screen, 16, 0, color=(0, 0, 0)
         )
         self.trainNameBox.showText(self.trainName)
         self.trainId = trainId
@@ -82,7 +82,8 @@ class TrainNew(train.Train):
                     self.state = 1
                 else:
                     # Zug fährt gerade nicht in Station ein. Entscheidung: Darf ich fahren?
-                    if self.rulebook():
+                    decision, _ = self.rulebook()
+                    if decision:
                         # Move train.
                         moveVector = self.heading * self.velocity
                         self.rect.center = self.rect.center + moveVector
@@ -94,7 +95,8 @@ class TrainNew(train.Train):
 
                 # Can i start moving again?
                 # is a train in the next section?
-                if self.rulebook():
+                decision, rule = self.rulebook()
+                if decision:
                     if self.direction:
                         nextIdx = self.latestTrackIndex + 1
                     else:
@@ -104,8 +106,12 @@ class TrainNew(train.Train):
                         + " beginnt Anfahrt auf Station "
                         + str(nextIdx)
                         + "."
+                        + " Aufgrund von Regel "
+                        + rule
+                        + "."
                     )
                     # start moving
+
                     self.state = 0
                     self.startMoving()
                     self.waitCycles = 0
@@ -126,21 +132,21 @@ class TrainNew(train.Train):
                 if self._enoughDistance(trainsInSameDirection):
                     # 4.1.1 Genug Abstand - Freie Fahrt!
                     self.trainInfoBox.showText("4.1.1")
-                    return True
+                    return True, "4.1.1"
                 else:
                     # 4.1.2 Zu wenig Abstand - Stop!
                     self.trainInfoBox.showText("4.1.2")
-                    return False
+                    return False, "4.1.2"
             else:
                 # 4.1.3 Züge fahren nicht in die gleiche Richtung - Stop!
                 self.trainInfoBox.showText("4.1.3")
-                return False
+                return False, "4.1.3"
         else:
             # Kein Zug ist im eingleisigen Abschnitt.
             # Bewege ich mich?
             if self.moving == True:
-                self.trainInfoBox.showText("4.2.0")
-                return True
+                self.trainInfoBox.showText("5")
+                return True, "5"
             else:
                 # Möchte noch ein anderer Zug in diesen Abschnitt einfahren?
                 relevantTrains = self._claimsToSection()
@@ -150,7 +156,7 @@ class TrainNew(train.Train):
                 else:
                     # 4.2.1 Keine vorhandenen Ansprüche - Freie Fahrt.
                     self.trainInfoBox.showText("4.2.1")
-                    return True
+                    return True, "4.2.1"
 
     def _trainsInNextSection(self):
         retList = []
@@ -266,7 +272,7 @@ class TrainNew(train.Train):
                         continue
                     else:
                         self.trainInfoBox.showText("4.2.2.2")
-                        return False
+                        return False, "4.2.2.2"
                 else:
                     print(
                         self.trainName
@@ -279,13 +285,13 @@ class TrainNew(train.Train):
                         + ")"
                     )
                     self.trainInfoBox.showText("4.2.2.3")
-                    return False
+                    return False, "4.2.2.3"
             else:
                 self.trainInfoBox.showText("4.2.2.3")
-                return False
+                return False, "4.2.2.3"
 
         self.trainInfoBox.showText("4.2.2.1")
-        return True
+        return True, "4.2.2.1"
 
     def _calculatePriority(self):
         return (self.waitCycles - constants.WAIT_CYCLES) * abs(

@@ -92,7 +92,7 @@ if __name__ == "__main__":
                 done = True
 
         # fill the screen
-        screen.fill((0, 0, 0))
+        screen.fill((230, 230, 230))
 
         # Do updates
         controller.update()

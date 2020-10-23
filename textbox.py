@@ -5,7 +5,14 @@ DISPLAY_CYCLES = 150
 
 
 class TextBox:
-    def __init__(self, position, screen, fontSize=32, maxDisplayCycles=DISPLAY_CYCLES):
+    def __init__(
+        self,
+        position,
+        screen,
+        fontSize=32,
+        maxDisplayCycles=DISPLAY_CYCLES,
+        color=WHITE,
+    ):
         self.position = position
         self.screen = screen
         self.font = pygame.font.SysFont(None, fontSize)
@@ -15,10 +22,11 @@ class TextBox:
         self.maxDisplayCycles = maxDisplayCycles
         self.displayCycles = 0
         self.displayText = ""
+        self.color = color
 
     def showText(self, displayText):
         self.displayText = displayText
-        self.text = self.font.render(self.displayText, True, WHITE)
+        self.text = self.font.render(self.displayText, True, self.color)
         self.rect = self.text.get_rect()
         self.rect.center = self.position
 
@@ -48,9 +56,9 @@ class TextBox:
 
     def __getFadedColor(self, cycles):
         fadedColor = (
-            WHITE[0] - (cycles - self.maxDisplayCycles),
-            WHITE[1] - (cycles - self.maxDisplayCycles),
-            WHITE[2] - (cycles - self.maxDisplayCycles),
+            self.color[0] - (cycles - self.maxDisplayCycles),
+            self.color[1] - (cycles - self.maxDisplayCycles),
+            self.color[2] - (cycles - self.maxDisplayCycles),
         )
         if fadedColor[0] < 0:
             return (0, 0, 0)
